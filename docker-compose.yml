@@ -1,0 +1,89 @@
+version: '2.1'
+services:
+  chirp-impl-singleton:
+    image: chirp-impl:1.0.0-SNAPSHOT
+    entrypoint: ["/opt/docker/bin/chirp-impl"]
+    ports:
+      - 10730:9000
+    environment:
+      - POSTGRES_USER=chirp-impl-user
+      - POSTGRES_PASSWORD=chirp-impl-password
+      - POSTGRES_DB=chirp-impl-db
+      - POSTGRES_HOST=postgresql-chirp-impl
+      - POSTGRES_PORT=5432
+      - APPLICATION_SECRET=QCY?tAnfk?aZ?iwrNwnxIlR6CTf:G3gf:90Latabg@5241AB`R5W:1uDFN];Ik@n
+      - AKKA_CLUSTER_ROLE=singleton
+      - LAGOM_READ_SIDE_RUN_ON_ROLE=singleton
+      - LAGOM_CLUSTER_JOIN_SELF=on
+      - AKKA_CLUSTER_SHARDING_STATE_STORE_MODE=ddata
+      - LAGOM_PERSISTENCE_PASSIVATE_AFTER_IDLE_TIMEOUT=1 milli
+    depends_on:
+      - postgresql-chirp-impl
+  chirp-impl-service:
+    image: chirp-impl:1.0.0-SNAPSHOT
+    entrypoint: ["/opt/docker/bin/chirp-impl"]
+    ports:
+      - 10731:9000
+    environment:
+      - POSTGRES_USER=chirp-impl-user
+      - POSTGRES_PASSWORD=chirp-impl-password
+      - POSTGRES_DB=chirp-impl-db
+      - POSTGRES_HOST=postgresql-chirp-impl
+      - POSTGRES_PORT=5432
+      - APPLICATION_SECRET=QCY?tAnfk?aZ?iwrNwnxIlR6CTf:G3gf:90Latabg@5241AB`R5W:1uDFN];Ik@n
+      - AKKA_CLUSTER_ROLE=service
+      - LAGOM_READ_SIDE_RUN_ON_ROLE=singleton
+      - LAGOM_CLUSTER_JOIN_SELF=on
+      - AKKA_CLUSTER_SHARDING_STATE_STORE_MODE=ddata
+      - LAGOM_PERSISTENCE_PASSIVATE_AFTER_IDLE_TIMEOUT=1 milli
+    depends_on:
+      - postgresql-chirp-impl
+  friend-impl-service:
+    image: friend-impl:1.0.0-SNAPSHOT
+    entrypoint: ["/opt/docker/bin/friend-impl"]
+    ports:
+      - 10732:9000
+    environment:
+      - CASSANDRA_ADDRESS=http://cassandra:9042
+      - APPLICATION_SECRET=QCY?tAnfk?aZ?iwrNwnxIlR6CTf:G3gf:90Latabg@5241AB`R5W:1uDFN];Ik@n
+      - LAGOM_CLUSTER_JOIN_SELF=on
+    depends_on:
+      - cassandra
+  activity-stream-impl-service:
+    image: activity-stream-impl:1.0.0-SNAPSHOT
+    entrypoint: ["/opt/docker/bin/activity-stream-impl"]
+    ports:
+      - 10733:9000
+    environment:
+      - CHIRP_ADDRESS_0=http://chirp-impl-singleton:9000
+      - CHIRP_ADDRESS_1=http://chirp-impl-service:9000
+      - FRIEND_ADDRESS=http://friend-impl-service:9000
+      - APPLICATION_SECRET=QCY?tAnfk?aZ?iwrNwnxIlR6CTf:G3gf:90Latabg@5241AB`R5W:1uDFN];Ik@n
+    depends_on:
+      - friend-impl-service
+      - chirp-impl-singleton
+  load-test-impl-service:
+    image: load-test-impl:1.0.0-SNAPSHOT
+    entrypoint: ["/opt/docker/bin/load-test-impl"]
+    ports:
+      - 10734:9000
+    environment:
+      - CHIRP_ADDRESS_0=http://chirp-impl-singleton:9000
+      - CHIRP_ADDRESS_1=http://chirp-impl-service:9000
+      - FRIEND_ADDRESS=http://friend-impl-service:9000
+      - ACTIVITY_ADDRESS=http://activity-stream-impl-service:9000
+      - APPLICATION_SECRET=QCY?tAnfk?aZ?iwrNwnxIlR6CTf:G3gf:90Latabg@5241AB`R5W:1uDFN];Ik@n
+    depends_on:
+      - friend-impl-service
+      - chirp-impl-singleton
+      - activity-stream-impl-service
+  postgresql-chirp-impl:
+    image: postgres:9.6-alpine
+    environment:
+      - POSTGRES_USER=chirp-impl-user
+      - POSTGRES_PASSWORD=chirp-impl-password
+      - POSTGRES_DB=chirp-impl-db
+    volumes:
+      - ./target/docker/postgresql:/var/lib/postgresql-chirp-impl
+  cassandra:
+    image: cassandra

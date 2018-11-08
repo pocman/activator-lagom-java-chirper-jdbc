@@ -1,0 +1,50 @@
+<configuration>
+
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+
+    <conversionRule conversionWord="coloredLevel" converterClass="com.lightbend.lagom.internal.logback.ColoredLevel" />
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%coloredLevel %logger{15} - %message%n%xException{10}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ASYNCSTDOUT" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="STDOUT" />
+    </appender>
+
+    <!-- Set logging for all Play library classes to INFO -->
+    <logger name="play" level="INFO" />
+    <!-- Set logging for all Akka library classes to WARN -->
+    <logger name="akka" level="INFO" />
+    <!-- Set logging for all Lagom library classes to WARN -->
+    <logger name="com.lightbend.lagom" level="INFO" />
+
+    <logger name="org.jdbcdslog" level="OFF" />
+
+    <logger name="akka.cluster.sharding.PersistentShardCoordinator" level="ERROR" />
+    <logger name="akka.cluster" level="INFO" />
+
+    <!--See https://github.com/slick/slick/blob/master/common-test-resources/logback.xml-->
+    <logger name="slick.basic.BasicBackend.action"          level="WARN" />
+    <logger name="slick.basic.BasicBackend.stream"          level="WARN" />
+    <logger name="slick.compiler"                           level="WARN" />
+    <logger name="slick.jdbc.DriverDataSource"              level="WARN" />
+    <logger name="slick.jdbc.JdbcBackend.statement"         level="WARN" />
+    <logger name="slick.jdbc.JdbcBackend.parameter"         level="WARN" />
+    <logger name="slick.jdbc.JdbcBackend.benchmark"         level="WARN" />
+    <logger name="slick.jdbc.StatementInvoker.result"       level="WARN" />
+    <logger name="slick.jdbc.JdbcModelBuilder"              level="WARN" />
+    <logger name="slick.relational"                         level="WARN" />
+    <logger name="slick.util"                               level="WARN" />
+
+
+    <logger name="org.postgresql"                 level="INFO" />
+    <logger name="com.zaxxer.hikari"              level="INFO" />
+
+    <root level="INFO">
+        <appender-ref ref="ASYNCSTDOUT" />
+    </root>
+
+</configuration>
