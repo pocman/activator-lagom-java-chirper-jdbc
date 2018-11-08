@@ -35,7 +35,7 @@ services:
       - LAGOM_READ_SIDE_RUN_ON_ROLE=singleton
       - LAGOM_CLUSTER_JOIN_SELF=on
       - AKKA_CLUSTER_SHARDING_STATE_STORE_MODE=ddata
-      - LAGOM_PERSISTENCE_PASSIVATE_AFTER_IDLE_TIMEOUT=1 milli
+      - LAGOM_PERSISTENCE_PASSIVATE_AFTER_IDLE_TIMEOUT=30 seconds
     depends_on:
       - postgresql-chirp-impl
   friend-impl-service:
