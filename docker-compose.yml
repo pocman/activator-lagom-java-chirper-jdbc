@@ -3,6 +3,7 @@ services:
   chirp-impl-singleton:
     image: chirp-impl:1.0.0-SNAPSHOT
     entrypoint: ["/opt/docker/bin/chirp-impl"]
+    restart: unless-stopped
     ports:
       - 10730:9000
     environment:
@@ -22,6 +23,7 @@ services:
   chirp-impl-service:
     image: chirp-impl:1.0.0-SNAPSHOT
     entrypoint: ["/opt/docker/bin/chirp-impl"]
+    restart: unless-stopped
     ports:
       - 10731:9000
     environment:
@@ -41,6 +43,7 @@ services:
   friend-impl-service:
     image: friend-impl:1.0.0-SNAPSHOT
     entrypoint: ["/opt/docker/bin/friend-impl"]
+    restart: unless-stopped
     ports:
       - 10732:9000
     environment:
@@ -52,6 +55,7 @@ services:
   activity-stream-impl-service:
     image: activity-stream-impl:1.0.0-SNAPSHOT
     entrypoint: ["/opt/docker/bin/activity-stream-impl"]
+    restart: unless-stopped
     ports:
       - 10733:9000
     environment:
@@ -65,6 +69,7 @@ services:
   load-test-impl-service:
     image: load-test-impl:1.0.0-SNAPSHOT
     entrypoint: ["/opt/docker/bin/load-test-impl"]
+    restart: unless-stopped
     ports:
       - 10734:9000
     environment:
@@ -79,6 +84,7 @@ services:
       - activity-stream-impl-service
   postgresql-chirp-impl:
     image: postgres:9.6-alpine
+    restart: unless-stopped
     environment:
       - POSTGRES_USER=chirp-impl-user
       - POSTGRES_PASSWORD=chirp-impl-password
@@ -86,4 +92,5 @@ services:
     volumes:
       - ./target/docker/postgresql:/var/lib/postgresql-chirp-impl
   cassandra:
+    restart: unless-stopped
     image: cassandra
